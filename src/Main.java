@@ -20,7 +20,7 @@ public class Main {
     public static int binaryToInt(int[] n) {
         int res = 0;
         for (int i = 0; i < n.length; i++)
-            res+=Math.pow(2,n.length-i)*n[i];
+            res+=Math.pow(2,n.length-1-i)*n[i];
         return res;
     }
     public static int[] plus_minus_bin(int[] a, int[] b)
@@ -49,22 +49,16 @@ public class Main {
             return divide_bin(temp, b);
         }
     }
-    public static int[] multiply_bin(int[] a, int[] b)
-    {
-        int[] result = new int[a.length + b.length - 1];
-        for (int i = 0; i < a.length; i++)
-            for (int j = 0; j < b.length; j++)
-                result[i + j] ++;
-        //must be [1,2,1,0], why the extra power?!
-        for (int k=0; k<result.length; k++)
-            result[k]%=2;
-//        int i = 0;
-//        while (i < result.length && result[i] == 0) i++;
-//        int[] trimmed = new int[i+1];
-//        System.arraycopy(result, 0, trimmed, 0, i);
-        return result;//divide_bin(trimmed,intToBinary(Q_primal));
+    public static int[] multiply_bin(int[] a, int[] b){
+        int[] result = new int[a.length+b.length-1];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < b.length; j++) {
+                result[i+j] += a[i] * b[j];
+                result[i + j] %= 2;
+            }
+        }
+        return result;
     }
-
     static final int Q = 1024;
     static final int Q_primal = 1033;
     static final int k=5;
@@ -78,7 +72,7 @@ public class Main {
             res+=p[p.length-1-i]*Math.pow(x,p.length-1-i);
         return res % Q;
     }
-    static int[] applyErrors(int[] p)
+    static void applyErrors(int[] p)
     {
         Random r = new Random();
         for (int i = 0; i<t; i++)
@@ -86,7 +80,6 @@ public class Main {
             int j = Math.abs(r.nextInt() % p.length-1);
             p[j] = Math.abs(r.nextInt() % Q);
         }
-        return p;
     }
 
     static int[] gaoEncode(int[] m, int[] a)
@@ -114,17 +107,14 @@ public class Main {
     public static void main(String[] args) {
         System.out.printf("d = %d, t = %d\n",d,t);
 
-        int[] m = {2,10,3,5,1}; //x4 + 5*x3 + 3*x2 + 10*x + 2
-        int[] a = {1,2,3,4,5,6,7};
+        //int[] m = {1,5,3,10,2}; //x4 + 5*x3 + 3*x2 + 10*x + 2
+        //int[] a = {1,2,3,4,5,6,7};
         //System.out.println(Arrays.toString(gaoEncode(m,a)));
 
         //System.out.println(Arrays.toString(intToBinary(Q_primal)));
-        int[] binary_ten=multiply_bin(intToBinary(6),intToBinary(3)); //should be [1,0,1,0]
+
+        int[] binary_ten=multiply_bin(intToBinary(6),intToBinary(3));
         System.out.println(Arrays.toString(binary_ten));
         System.out.println(binaryToInt(binary_ten));
-
-
-
-
     }
 }
