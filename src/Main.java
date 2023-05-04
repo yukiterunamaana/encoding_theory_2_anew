@@ -2,6 +2,14 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Main {
+    public static int[] trim(int[] arr) {
+        int i = 0;
+        while (i < arr.length && arr[i] == 0) {
+            i++;
+        }
+        return Arrays.copyOfRange(arr, i, arr.length);
+    }
+
     public static int[] intToBinary(int n) {
         if (n == 0)
             return new int[] { 0 };
@@ -31,7 +39,7 @@ public class Main {
             int y = (i < b.length) ? b[i] : 0;
             result[i] = (x + y) % 2;
         }
-        return result;
+        return trim(result);
     }
     public static int[] divide_bin(int[] a, int[] b)
     {
@@ -42,10 +50,8 @@ public class Main {
             int diff = a.length-b.length;
             int[] t = new int[diff+1];
             t[0]=1;
-            int[] temp = b;
-            System.out.println(Arrays.toString(t));
-            temp=multiply_bin(t,temp);
-            System.out.println(Arrays.toString(temp));
+
+            int[] temp=plus_minus_bin(a,multiply_bin(t, b));
             return divide_bin(temp, b);
         }
     }
@@ -107,14 +113,16 @@ public class Main {
     public static void main(String[] args) {
         System.out.printf("d = %d, t = %d\n",d,t);
 
-        //int[] m = {1,5,3,10,2}; //x4 + 5*x3 + 3*x2 + 10*x + 2
-        //int[] a = {1,2,3,4,5,6,7};
-        //System.out.println(Arrays.toString(gaoEncode(m,a)));
+        int[] m = {1,5,3,10,2}; //x4 + 5*x3 + 3*x2 + 10*x + 2
+        int[] a = {1,2,3,4,5,6,7};
+        System.out.println(Arrays.toString(gaoEncode(m,a)));
 
         //System.out.println(Arrays.toString(intToBinary(Q_primal)));
 
         int[] binary_ten=multiply_bin(intToBinary(6),intToBinary(3));
-        System.out.println(Arrays.toString(binary_ten));
-        System.out.println(binaryToInt(binary_ten));
+        int[] div = divide_bin(binary_ten,intToBinary(11));
+        System.out.println(Arrays.toString(div));
+        //System.out.println(Arrays.toString(binary_ten));
+        //System.out.println(binaryToInt(binary_ten));
     }
 }
