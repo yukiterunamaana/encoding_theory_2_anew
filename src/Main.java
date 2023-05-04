@@ -17,7 +17,12 @@ public class Main {
         }
         return result;
     }
-
+    public static int binaryToInt(int[] n) {
+        int res = 0;
+        for (int i = 0; i < n.length; i++)
+            res+=Math.pow(2,n.length-i)*n[i];
+        return res;
+    }
     public static int[] plus_minus_bin(int[] a, int[] b)
     {
         int[] result = new int[Math.max(a.length, b.length)];
@@ -46,22 +51,21 @@ public class Main {
     }
     public static int[] multiply_bin(int[] a, int[] b)
     {
-        int[] result = new int[a.length + b.length];
+        int[] result = new int[a.length + b.length - 1];
         for (int i = 0; i < a.length; i++)
             for (int j = 0; j < b.length; j++)
-            {
                 result[i + j] ++;
-                result[i + j] %= 2;
-            }
-        int i = result.length - 1;
-        while (i >= 0 && result[i] == 0) i--;
-        int[] trimmed = new int[i+1];
-        System.arraycopy(result, 0, trimmed, 0, i+1);
-        return divide_bin(trimmed,intToBinary(Q_primal));
+        //must be [1,2,1,0], why the extra power?!
+        for (int k=0; k<result.length; k++)
+            result[k]%=2;
+//        int i = 0;
+//        while (i < result.length && result[i] == 0) i++;
+//        int[] trimmed = new int[i+1];
+//        System.arraycopy(result, 0, trimmed, 0, i);
+        return result;//divide_bin(trimmed,intToBinary(Q_primal));
     }
 
     static final int Q = 1024;
-    //x10+x3+1
     static final int Q_primal = 1033;
     static final int k=5;
     static final int n=7;
@@ -85,6 +89,15 @@ public class Main {
         return p;
     }
 
+    static int[] gaoEncode(int[] m, int[] a)
+    {
+        int[] c = new int[a.length];
+        for (int i=0;i<a.length;i++)
+            c[i]=calcPolynomeValueANEW(a[i],m);
+        applyErrors(c);
+        return c;
+    }
+
     //    public static int[] polynominalG0(int[] a) {
 //        int n = a.length;
 //        int[] poly = new int[n+1];
@@ -103,14 +116,15 @@ public class Main {
 
         int[] m = {2,10,3,5,1}; //x4 + 5*x3 + 3*x2 + 10*x + 2
         int[] a = {1,2,3,4,5,6,7};
-        int[] c = new int[n];
-        for (int i=0;i<a.length;i++)
-            c[i]=calcPolynomeValueANEW(a[i],m);
-        System.out.println(Arrays.toString(c));
+        //System.out.println(Arrays.toString(gaoEncode(m,a)));
 
-        int[] b = applyErrors(c);
-        System.out.println(Arrays.toString(b));
+        //System.out.println(Arrays.toString(intToBinary(Q_primal)));
+        int[] binary_ten=multiply_bin(intToBinary(6),intToBinary(3)); //should be [1,0,1,0]
+        System.out.println(Arrays.toString(binary_ten));
+        System.out.println(binaryToInt(binary_ten));
 
-        System.out.println(Arrays.toString(intToBinary(Q_primal)));
+
+
+
     }
 }
