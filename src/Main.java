@@ -81,10 +81,7 @@ class Task1
 {
     static final int Q = 8;
     static final int Q_primal = 11;
-    static final int k=5;
-    static final int n=7;
-    static final int d = n-k+1;
-    static final int t = (int) Math.floor(((double)d-1)/2);
+
 
     public static int[] intToBinary(int n) {
         if (n == 0)
@@ -173,31 +170,6 @@ class Task1
     {return binaryToInt(multiply_bin_(intToBinary(a),intToBinary(b)));}
     public static int power(int a, int p) //V
     {return binaryToInt(power_bin_(intToBinary(a),p));}
-//    public static double[] lagrangePolynome(int[] x, int[] y)
-//    {
-//        double[] res = new double[]{0};
-//        for (int i=0;i<x.length;i++)
-//            if (y[i]!=0)
-//            {
-//                double[] member=new double[]{1};
-//                for (int j=0; j<x.length; j++)
-//                    if (i!=j)
-//                    {
-//                        double[] x_minus_xj = new double[]{1, -1*x[j]};
-//                        member=multiplyPolynomials(member,x_minus_xj);
-//                        for (int k=0; k<member.length; k++)
-//                        {
-//                            if (i!=j)
-//                                member[k]/=x[i]-x[j];
-//                        }
-//                    }
-//                for (int k=0; k<member.length; k++)
-//                    member[k]*=y[i];
-//
-//                res=addPolynomials(res,member);
-//            }
-//        return res;
-//    }
     public static int[] add_subPolynomialsGF(int[] a, int[] b)
     {
         int[] result = new int[Math.max(a.length, b.length)];
@@ -216,6 +188,43 @@ class Task1
                 result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
         return Commons.trim(result);
     }
+
+    public static int[][] dividePolynomials_internal(int[] polyDividend, int[] polyDivisor) {
+        int dividendDegree = polyDividend.length - 1;
+        int divisorDegree = polyDivisor.length - 1;
+
+        // check for divisor being zero or having higher degree than dividend
+        if (divisorDegree == 0 || dividendDegree < divisorDegree) {
+            throw new IllegalArgumentException("Invalid input polynomial(s)");
+        }
+
+        int[] quotient = new int[dividendDegree - divisorDegree + 1];
+        int[] remainder = Arrays.copyOf(polyDividend, polyDividend.length);
+
+        for (int i = dividendDegree; i >= divisorDegree; i--) {
+            int q = remainder[i] / polyDivisor[divisorDegree];
+            quotient[i - divisorDegree] = q;
+
+            for (int j = divisorDegree; j >= 0; j--) {
+                remainder[i - divisorDegree + j] -= q * polyDivisor[j];
+            }
+        }
+
+        // remove leading zeros if any in remainder
+        int remainderDegree = remainder.length - 1;
+        while (remainderDegree > 0 && remainder[remainderDegree] == 0) {
+            remainderDegree--;
+        }
+        int[] finalRemainder = Arrays.copyOfRange(remainder, 0, remainderDegree + 1);
+
+        return new int[][] { quotient, finalRemainder };
+    }
+
+    public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
+    {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
+    public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
+    {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
+
     public static int[] dividePolynomialsGF(int[] a, int[] b, int[] t)
     {
         int aDeg = a.length - 1;
@@ -232,6 +241,7 @@ class Task1
         temp=Commons.trim(temp);
         return dividePolynomialsGF(temp, b, t);
     }
+
     public static int[] lagrangePolynomialsGF(int[] x, int[] y)
     {
         int[] res = new int[]{0};
@@ -262,17 +272,16 @@ class Task1
     private static void applyErrors(int[] p)
     {
         Random r = new Random();
-        for (int i = 0; i < r.nextInt() % t + 1; i++) //случайное кол-во ошибок, но минимум одна
-        {
-            int j = Math.abs(r.nextInt() % p.length-1);
+        int j = Math.abs(r.nextInt() % p.length);
+        int pj=p[j];
+        while(pj==p[j])
             p[j] = Math.abs(r.nextInt() % Q);
-        }
     } //V
-    public static int[] gaoEncode(int[] m, int[] a)
+    public static int[] gaoEncode(int[] polynome, int[] message)
     {
-        int[] c = new int[a.length];
-        for (int i=0;i<a.length;i++)
-            c[i]=evalPolynomialGF(a[i],m);
+        int[] c = new int[message.length];
+        for (int i=0;i<message.length;i++)
+            c[i]=evalPolynomialGF(message[i],polynome);
         System.out.println("Before error addition:\n"+Arrays.toString(c));
         applyErrors(c);
         return c;
@@ -291,7 +300,7 @@ class Task1
         int[] us = multiply_bin_(u,s);
         int[] tv = multiply_bin_(t,v);
         int[] gcd = plus_minus_bin_(us, tv);
-        while (gcd.length >= Math.floor((n+k)/2))
+        while (gcd.length >= Math.floor((g0.length+g1.length)/2))
         {
 //            // Compute the quotient and remainder polynomials
 //            int[] quotient = divide_bin_(u, v)[0];
@@ -343,7 +352,15 @@ class Task2 extends Task1
 
 public class Main {
     public static void main(String[] args) {
+        final int k=5;
+        final int n=7;
+        final int d = n-k+1;
+        final int t = (int) Math.floor(((double)d-1)/2);
 
+        int[] polynome = new int[]{1,5,3,2,4};
+        int[] message = new int[]{1,2,3,4,5,6,7};
+        int[] code = Task1.gaoEncode(polynome,message);
+        System.out.println(Arrays.toString(code));
 
 //        System.out.println(Arrays.toString(Commons.intToBinary(6)));
 //        System.out.println(Arrays.toString(Commons.intToBinary(3)));
@@ -353,8 +370,7 @@ public class Main {
 
         int[] ten = Task1.multiplyPolynomialsGF(new int[]{0,1,1},new int[]{1,1});
         System.out.println(Arrays.toString(ten));
-
-        ten = Task1.dividePolynomialsGF(ten, Task1.intToBinary(Task1.Q_primal), new int[]{0});
+        ten = Task1.dividePolynomials(ten, Task1.intToBinary(5));
         System.out.println(Arrays.toString(ten));
     }
 }
