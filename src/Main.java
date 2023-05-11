@@ -140,13 +140,12 @@ class Task1
         if (aDeg < bDeg) return a;
         int[] quotient = new int[aDeg - bDeg + 1];
         quotient[quotient.length-1]=1;
-//        int[] sub = multiply_bin_(b,quotient);
         int[] sub = temp_mult_bin(b,quotient);
         int[] temp = plus_minus_bin_(a, sub);
         temp=Commons.trim(temp);
         return divide_bin_(temp, b);
     }
-    static int[] temp_mult_bin(int[] a, int[] b)
+    static int[] temp_mult_bin(int[] a, int[] b) //V
     {
         int n = a.length - 1;
         int m = b.length - 1;
@@ -167,7 +166,6 @@ class Task1
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= m; j++) {
                 result[i + j] += a[i] * b[j];
-                //result[i + j] %= 2;
             }
         }
 
@@ -178,15 +176,14 @@ class Task1
             return result;
         else return divide_bin_(result,intToBinary(Q_primal));
     }
-    static int[] power_bin_(int[] a, int p)
+    static int[] power_bin_(int[] a, int p) //V
     {
         int[] result = {1};
         for (int i = 0; i < p; i++)
             result=multiply_bin_(result, a);
         return result; //divide_bin_(result,intToBinary(Q_primal));
     }
-
-    static int[] divide_pow_bin_(int[] a, int[] b)
+    static int[] divide_pow_bin_(int[] a, int[] b) //V
     {
         int pow_a=0;
         int pow_b=0;
@@ -205,7 +202,7 @@ class Task1
         return power_bin_(new int[]{0,1},pow_res);
     }
 
-    public static int plus_minus(int a, int b) //V
+    public static int plus_minus(int a, int b)
     {return binaryToInt(plus_minus_bin_(intToBinary(a),intToBinary(b)));}
     public static int divide(int a, int b)
     {return binaryToInt(divide_bin_(intToBinary(a),intToBinary(b)));}
@@ -213,12 +210,11 @@ class Task1
     {return binaryToInt(multiply_bin_(intToBinary(a),intToBinary(b)));}
     public static int power(int a, int p)
     {return binaryToInt(power_bin_(intToBinary(a),p));}
-
     public static int divpowbin(int a, int b)
     {return binaryToInt(divide_pow_bin_(intToBinary(a),intToBinary(b)));}
 
 
-    public static int[] add_subPolynomialsGF(int[] a, int[] b)
+    public static int[] add_subPolynomialsGF(int[] a, int[] b) //V
     {
         int[] result = new int[Math.max(a.length, b.length)];
         for(int i=0; i<result.length; i++){
@@ -228,7 +224,8 @@ class Task1
         }
         return result;
     }
-    public static int[] multiplyPolynomialsGF(int[] a, int[] b)
+
+    public static int[] multiplyPolynomialsGF(int[] a, int[] b) //V
     {
         int[] result = new int[a.length + b.length - 1];
         for(int i=0; i<a.length; i++)
@@ -236,10 +233,10 @@ class Task1
                 result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
         result=Commons.trim(result);
 
-        if (binaryToInt(result)<Q)
+        //if (binaryToInt(result)<Q)
             return result;
-        else
-        return modulePolynomials_GF(result,intToBinary(Q_primal));
+        //else
+        //return modulePolynomials_GF(result,intToBinary(Q_primal));
     }
 //    public static int[][] dividePolynomials_internal(int[] a, int[] b) {
 //        int m = a.length - 1;
@@ -275,7 +272,7 @@ class Task1
         int[] q = new int[m - n + 1];
         int[] r = a;
         for (int i = m; i >= n; i--) {
-            int coeff = divide(r[i], b[n]);
+            int coeff = divpowbin(r[i], b[n]);
             q[i - n] = coeff;
             for (int j = n; j >= 0; j--)
                 r[i - n + j] = plus_minus(r[i - n + j],multiply(coeff, b[j]));
@@ -648,6 +645,7 @@ public class Main {
         //System.out.println(Task1.multiply(6,5));
 
 
-        System.out.println(Task1.divpowbin(6,3));
+        System.out.println(Arrays.toString(Task1.dividePolynomials_GF(new int[]{6, 4, 2}, new int[]{3, 2, 1})));
+        System.out.println(Arrays.toString(Task1.modulePolynomials_GF(new int[]{5, 4, 1}, new int[]{2, 3, 1})));
     }
 }
