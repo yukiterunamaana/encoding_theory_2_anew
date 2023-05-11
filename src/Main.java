@@ -159,7 +159,7 @@ class Task1
         }
         return result;
     }
-    static int[] multiply_bin_(int[] a, int[] b)
+    static int[] multiply_bin_(int[] a, int[] b) //V
     {
         int n = a.length - 1;
         int m = b.length - 1;
@@ -186,6 +186,25 @@ class Task1
         return result; //divide_bin_(result,intToBinary(Q_primal));
     }
 
+    static int[] divide_pow_bin_(int[] a, int[] b)
+    {
+        int pow_a=0;
+        int pow_b=0;
+        int btoi_a=binaryToInt(a);
+        int btoi_b=binaryToInt(b);
+        ;
+        while (power(2,pow_a)!=btoi_a)
+        {
+            pow_a++;
+        }
+        while (power(2,pow_b)!=btoi_b)
+        {
+            pow_b++;
+        }
+        int pow_res = Q-1+((pow_a-pow_b)%(Q-1));
+        return power_bin_(new int[]{0,1},pow_res);
+    }
+
     public static int plus_minus(int a, int b) //V
     {return binaryToInt(plus_minus_bin_(intToBinary(a),intToBinary(b)));}
     public static int divide(int a, int b)
@@ -194,6 +213,9 @@ class Task1
     {return binaryToInt(multiply_bin_(intToBinary(a),intToBinary(b)));}
     public static int power(int a, int p)
     {return binaryToInt(power_bin_(intToBinary(a),p));}
+
+    public static int divpowbin(int a, int b)
+    {return binaryToInt(divide_pow_bin_(intToBinary(a),intToBinary(b)));}
 
 
     public static int[] add_subPolynomialsGF(int[] a, int[] b)
@@ -621,8 +643,11 @@ public class Main {
 //        System.out.println(power);
 
         //System.out.println(Task1.plus_minus(6,3));
-        System.out.println(Task1.multiply(6,3));
-        System.out.println(Task1.multiply(6,5));
 
+        //System.out.println(Task1.multiply(6,3));
+        //System.out.println(Task1.multiply(6,5));
+
+
+        System.out.println(Task1.divpowbin(6,3));
     }
 }
