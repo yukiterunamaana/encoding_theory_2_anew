@@ -186,61 +186,111 @@ class Task1
         for(int i=0; i<a.length; i++)
             for(int j=0; j<b.length; j++)
                 result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
-        return Commons.trim(result);
+        return modulePolynomials_GF(Commons.trim(result),intToBinary(Q_primal));
     }
 
-    public static int[][] dividePolynomials_internal(int[] polyDividend, int[] polyDivisor) {
-        int dividendDegree = polyDividend.length - 1;
-        int divisorDegree = polyDivisor.length - 1;
-
-        // check for divisor being zero or having higher degree than dividend
-        if (divisorDegree == 0 || dividendDegree < divisorDegree) {
+    public static int[][] dividePolynomials_internal(int[] a, int[] b) {
+        int m = a.length - 1;
+        int n = b.length - 1;
+        if (n == 0 || m < n)
             throw new IllegalArgumentException("Invalid input polynomial(s)");
+        int[] q = new int[m - n + 1];
+        int[] r = a;
+        for (int i = m; i >= n; i--) {
+            int coeff = r[i] / b[n];
+            q[i - n] = coeff;
+            for (int j = n; j >= 0; j--)
+                r[i - n + j] -= coeff * b[j];
         }
-
-        int[] quotient = new int[dividendDegree - divisorDegree + 1];
-        int[] remainder = Arrays.copyOf(polyDividend, polyDividend.length);
-
-        for (int i = dividendDegree; i >= divisorDegree; i--) {
-            int q = remainder[i] / polyDivisor[divisorDegree];
-            quotient[i - divisorDegree] = q;
-
-            for (int j = divisorDegree; j >= 0; j--) {
-                remainder[i - divisorDegree + j] -= q * polyDivisor[j];
-            }
-        }
-
-        // remove leading zeros if any in remainder
-        int remainderDegree = remainder.length - 1;
-        while (remainderDegree > 0 && remainder[remainderDegree] == 0) {
-            remainderDegree--;
-        }
-        int[] finalRemainder = Arrays.copyOfRange(remainder, 0, remainderDegree + 1);
-
-        return new int[][] { quotient, finalRemainder };
+        return new int[][] { modulePolynomials(q,intToBinary(Q_primal)), Commons.trim(r)};
     }
-
     public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
     public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
 
-    public static int[] dividePolynomialsGF(int[] a, int[] b, int[] t)
+    public static int[][] dividePolynomialsGF_internal(int[] a, int[] b)
     {
-        int aDeg = a.length - 1;
-        int bDeg = b.length - 1;
-        if (aDeg < bDeg) return t;
-
-        int[] quotient = new int[aDeg - bDeg + 1];
-        quotient[quotient.length-1]=divide(a[aDeg],b[bDeg]);
-        t = add_subPolynomialsGF(t,quotient);
-        System.out.println(Arrays.toString(t));
-
-        int[] sub = temp_mult_bin(b,quotient);
-        int[] temp = add_subPolynomialsGF(a, sub);
-        temp=Commons.trim(temp);
-        return dividePolynomialsGF(temp, b, t);
+        int m = a.length - 1;
+        int n = b.length - 1;
+        if (n == 0 || m < n)
+            throw new IllegalArgumentException("Invalid input polynomial(s)");
+        int[] q = new int[m - n + 1];
+        int[] r = a;
+        for (int i = m; i >= n; i--) {
+            int coeff = divide(r[i], b[n]);
+            q[i - n] = coeff;
+            for (int j = n; j >= 0; j--)
+                r[i - n + j] = plus_minus(r[i - n + j],multiply(coeff, b[j]));
+        }
+        return new int[][] {q, Commons.trim(r)};
     }
+    public static int[] dividePolynomials_GF(int[] polyDividend, int[] polyDivisor)
+    {return dividePolynomialsGF_internal(polyDividend, polyDivisor)[0];}
+    public static int[] modulePolynomials_GF(int[] polyDividend, int[] polyDivisor)
+    {return dividePolynomialsGF_internal(polyDividend, polyDivisor)[1];}
+
+//    public static int[] multiplyPolynomialsGF(int[] a, int[] b)
+//    {
+//        int[] result = new int[a.length + b.length - 1];
+//        for(int i=0; i<a.length; i++)
+//            for(int j=0; j<b.length; j++)
+//                result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
+//        return Commons.trim(result);
+//    }
+//
+//    public static int[][] dividePolynomials_internal(int[] polyDividend, int[] polyDivisor) {
+//        int dividendDegree = polyDividend.length - 1;
+//        int divisorDegree = polyDivisor.length - 1;
+//
+//        // check for divisor being zero or having higher degree than dividend
+//        if (divisorDegree == 0 || dividendDegree < divisorDegree) {
+//            throw new IllegalArgumentException("Invalid input polynomial(s)");
+//        }
+//
+//        int[] quotient = new int[dividendDegree - divisorDegree + 1];
+//        int[] remainder = Arrays.copyOf(polyDividend, polyDividend.length);
+//
+//        for (int i = dividendDegree; i >= divisorDegree; i--) {
+//            int q = remainder[i] / polyDivisor[divisorDegree];
+//            quotient[i - divisorDegree] = q;
+//
+//            for (int j = divisorDegree; j >= 0; j--) {
+//                remainder[i - divisorDegree + j] -= q * polyDivisor[j];
+//            }
+//        }
+//
+//        // remove leading zeros if any in remainder
+//        int remainderDegree = remainder.length - 1;
+//        while (remainderDegree > 0 && remainder[remainderDegree] == 0) {
+//            remainderDegree--;
+//        }
+//        int[] finalRemainder = Arrays.copyOfRange(remainder, 0, remainderDegree + 1);
+//
+//        return new int[][] { quotient, finalRemainder };
+//    }
+//
+//    public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
+//    {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
+//    public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
+//    {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
+//
+//    public static int[] dividePolynomialsGF(int[] a, int[] b, int[] t)
+//    {
+//        int aDeg = a.length - 1;
+//        int bDeg = b.length - 1;
+//        if (aDeg < bDeg) return t;
+//
+//        int[] quotient = new int[aDeg - bDeg + 1];
+//        quotient[quotient.length-1]=divide(a[aDeg],b[bDeg]);
+//        t = add_subPolynomialsGF(t,quotient);
+//        System.out.println(Arrays.toString(t));
+//
+//        int[] sub = temp_mult_bin(b,quotient);
+//        int[] temp = add_subPolynomialsGF(a, sub);
+//        temp=Commons.trim(temp);
+//        return dividePolynomialsGF(temp, b, t);
+//    }
 
     public static int[] lagrangePolynomialsGF(int[] x, int[] y)
     {
