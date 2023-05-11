@@ -1,4 +1,5 @@
 import java.util.*;
+import static java.lang.Math.abs;
 
 class Commons
 {
@@ -104,6 +105,24 @@ class Task1
             res+=Math.pow(2,i)*n[i];
         return res;
     } //V
+
+//    static int add(int a, int b){return (a+b)%Q;}
+//
+//    static int sub(int a, int b){return (a-b+Q)%Q;}
+//
+////    static int pow(int a, int p)
+////    {
+////        int res=1;
+////        for (int i=0; i<p; i++)
+////
+////    }
+//    static int div(int a, int b)
+//    {
+//        return binaryToInt(divide_bin_(intToBinary(a),intToBinary(b)));
+//    }
+//
+//    static int mult(int a, int b){return div((a%Q)*(b%Q),Q_primal);}
+
     static int[] plus_minus_bin_(int[] a, int[] b) //V
     {
         int[] result = new int[Math.max(a.length, b.length)];
@@ -114,6 +133,7 @@ class Task1
         }
         return Commons.trim(result);
     }
+
     static int[] divide_bin_(int[] a, int[] b) //V
     {
         int aDeg = a.length - 1;
@@ -189,11 +209,15 @@ class Task1
         return modulePolynomials_GF(Commons.trim(result),intToBinary(Q_primal));
     }
 
+
+
+
     public static int[][] dividePolynomials_internal(int[] a, int[] b) {
         int m = a.length - 1;
         int n = b.length - 1;
         if (n == 0 || m < n)
-            throw new IllegalArgumentException("Invalid input polynomial(s)");
+            return new int[][]{new int[]{0},a};
+            //throw new IllegalArgumentException("Invalid input polynomial(s)");
         int[] q = new int[m - n + 1];
         int[] r = a;
         for (int i = m; i >= n; i--) {
@@ -202,7 +226,11 @@ class Task1
             for (int j = n; j >= 0; j--)
                 r[i - n + j] -= coeff * b[j];
         }
-        return new int[][] { modulePolynomials(q,intToBinary(Q_primal)), Commons.trim(r)};
+        q = Commons.trim(q);
+        r = Commons.trim(r);
+
+        return new int[][] {q, r};
+        //return new int[][] { modulePolynomials(q,intToBinary(Q_primal)), Commons.trim(r)};
     }
     public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
@@ -322,10 +350,10 @@ class Task1
     private static void applyErrors(int[] p)
     {
         Random r = new Random();
-        int j = Math.abs(r.nextInt() % p.length);
+        int j = abs(r.nextInt() % p.length);
         int pj=p[j];
         while(pj==p[j])
-            p[j] = Math.abs(r.nextInt() % Q);
+            p[j] = abs(r.nextInt() % Q);
     } //V
     public static int[] gaoEncode(int[] polynome, int[] message)
     {
@@ -336,39 +364,196 @@ class Task1
         applyErrors(c);
         return c;
     }
+//    public static int gcd(int a, int b)
+//    {
+//        while (b!=0)
+//        {
+//            int c = a % b;
+//            a = b;
+//            b = c;
+//        }
+//        return abs(a);
+//    }
+//    public static int[] gcd_bin(int[] a, int[] b)
+//    {
+//        while (b.length>0)
+//        {
+//            int[] c = modulePolynomials(a,b);
+//            a = b;
+//            b = c;
+//        }
+//        return a;
+//    }
+
+//    public static int[] gcdPoly(int[] a, int[] b) {
+//    int aDeg = a.length - 1;
+//    int bDeg = b.length - 1;
+//
+//    // Check if either polynomial is the zero polynomial
+//    if (aDeg < 0) return b;
+//    if (bDeg < 0) return a;
+//
+//    // Set the highest degree polynomial to gcd
+//    int[] gcd = (aDeg > bDeg) ? a : b;
+//    int[] r = (aDeg > bDeg) ? b : a;
+//
+//    // Divide until the remainder is zero
+//    while (r[0] != 0) {
+//        int rDeg = r.length - 1;
+//        int gcdDeg = gcd.length - 1;
+//        int[] q = new int[gcdDeg - rDeg + 1];
+//
+//        // Divide the highest degree polynomial of gcd by the highest degree polynomial of remainder
+//        q[gcdDeg - rDeg] = gcd[gcdDeg] / r[rDeg];
+//
+//        // Store the quotient in a new array
+//        for (int i = rDeg - 1; i >= 0; i--) {
+//            int tmp = 0;
+//            for (int j = gcdDeg - rDeg + i; j >= gcdDeg - rDeg; j--) {
+//                tmp = gcd[j] - q[gcdDeg - rDeg] * r[j - rDeg + i];
+//                gcd[j] = tmp;
+//            }
+//            gcd[gcdDeg - rDeg + i] = tmp;
+//        }
+//
+//        // Swap gcd and remainder
+//        int[] tmp = gcd;
+//        gcd = r;
+//        r = tmp;
+//    }
+//
+//    return gcd;
+//}
+public static int[] subPolynomials(int[] a, int[] b)
+{
+    int[] result = new int[Math.max(a.length, b.length)];
+    for(int i=0; i<result.length; i++){
+        int coeffA = (i<a.length) ? a[i] : 0;
+        int coeffB = (i<b.length) ? b[i] : 0;
+        result[i] = coeffA-coeffB;
+    }
+    return result;
+}
+public static int[] multiplyPolynomials(int[] a, int[] b)
+{
+    int[] result = new int[a.length + b.length - 1];
+    for(int i=0; i<a.length; i++)
+        for(int j=0; j<b.length; j++)
+            result[i+j] += a[i]*b[j];
+    return Commons.trim(result);
+}
+//    public static int[] gcd(int[] polynomial1, int[] polynomial2) {
+//    // Ensure that polynomial1 is the higher degree polynomial
+//    if (polynomial1.length < polynomial2.length) {
+//        int[] temp = polynomial1;
+//        polynomial1 = polynomial2;
+//        polynomial2 = temp;
+//    }
+//
+//    // Keep dividing the lower degree polynomial by the remainder until the remainder is zero
+//    int[] remainder = polynomial2;
+//    while (!Arrays.equals(remainder, new int[remainder.length])) {
+//        int[] quotient = new int[polynomial1.length - remainder.length + 1];
+//        quotient[quotient.length - 1] = polynomial1[polynomial1.length - 1] / remainder[remainder.length - 1];
+//        int[] temp = multiplyPolynomials(quotient, remainder);
+//        polynomial1 = subPolynomials(polynomial1, temp);
+//
+//        // Swap the polynomials so that the one with the lower degree is the remainder for the next iteration
+//        int[] temp2 = Commons.trim(polynomial1);
+//        polynomial1 = Commons.trim(remainder);
+//        remainder = Commons.trim(temp2);
+//    }
+//
+//    // Return the final remainder (which is the GCD)
+//    return polynomial1;
+//    }
+//    public static int[] gcd_poly(int[] a, int[] b)
+//    {
+//        int[] c = new int[]{};
+//        while (b.length>0)
+//        {
+//            c = modulePolynomials(a,b);
+//            a = b;
+//            b = c;
+//        }
+//        for (int i=0; i<c.length; i++)
+//            c[i]/=c[c.length-1];
+//
+//        return c;
+//    }
+//    public int[] extendedEuclideanGF(int[] g0, int[] g1)
+//    {
+//        while (g1.length>0)
+//        {
+//            int[] c = modulePolynomials(g0,g1);
+//            g0 = g1;
+//            g1 = c;
+//        }
+//        return g0;
+//    }
+//    //TODO
+////    public int[] extendedEuclideanGF(int[] g0, int[] g1)
+////    {
+////        // Initialize temporary polynomials u and v with the values of g0 and g1 respectively
+////        int[] u = g0;
+////        int[] v = g1;
+////        // Initialize coefficients for the polynomials s and t, where su + tv = gcd(g0, g1)
+////        int[] s = {1};
+////        int[] t = {0};
+////        // Continue the division while the length of add(multiply(u,g0), multiply(v,g1)) is greater than the given constant
+////        int[] us = multiply_bin_(u,s);
+////        int[] tv = multiply_bin_(t,v);
+////        int[] gcd = plus_minus_bin_(us, tv);
+////        while (gcd.length >= Math.floor((g0.length+g1.length)/2))
+////        {
+//////            // Compute the quotient and remainder polynomials
+//////            int[] quotient = divide_bin_(u, v)[0];
+//////            int[] remainder = divide_bin_(u, v)[1];
+//////
+//////            // Update the temporary polynomials u and v with the remainder and divisor respectively
+//////            u = v;
+//////            v = remainder;
+//////
+//////            // Update the coefficients for the polynomials s and t
+//////            int[] temp = plus_minus(s, multiply(quotient, t));
+//////            s = t;
+//////            t = temp;
+////        }
+////
+////        // Return the coefficients for the polynomial s, which represents the inverse of g0 mod g1
+////        return s;
+////    }
+//    //TODO
+
 
     //TODO
-    public int[] extendedEuclidean(int[] g0, int[] g1)
+    static int[] partial_gcd_GF(int[] q0, int[] q1, int stop)
     {
-        // Initialize temporary polynomials u and v with the values of g0 and g1 respectively
-        int[] u = g0;
-        int[] v = g1;
-        // Initialize coefficients for the polynomials s and t, where su + tv = gcd(g0, g1)
-        int[] s = {1};
-        int[] t = {0};
-        // Continue the division while the length of add(multiply(u,g0), multiply(v,g1)) is greater than the given constant
-        int[] us = multiply_bin_(u,s);
-        int[] tv = multiply_bin_(t,v);
-        int[] gcd = plus_minus_bin_(us, tv);
-        while (gcd.length >= Math.floor((g0.length+g1.length)/2))
-        {
-//            // Compute the quotient and remainder polynomials
-//            int[] quotient = divide_bin_(u, v)[0];
-//            int[] remainder = divide_bin_(u, v)[1];
-//
-//            // Update the temporary polynomials u and v with the remainder and divisor respectively
-//            u = v;
-//            v = remainder;
-//
-//            // Update the coefficients for the polynomials s and t
-//            int[] temp = plus_minus(s, multiply(quotient, t));
-//            s = t;
-//            t = temp;
-        }
+        int[] r0 = q0;
+        int[] r1=q1;
 
-        // Return the coefficients for the polynomial s, which represents the inverse of g0 mod g1
-        return s;
+        int[] s0=Task1.intToBinary(1);
+        int[] s1=Task1.intToBinary(0);
+
+        int[] t0=Task1.intToBinary(0);
+        int[] t1=Task1.intToBinary(1);
+
+        while (r1.length-1>stop)
+        {
+            int[] q = Task1.dividePolynomials_GF(q0,q1);
+
+            int[] ts=s0;
+            int[] tt=t0;
+            r0=r1;
+            s0=s1;
+            t0=t1;
+            r1=Task1.modulePolynomials_GF(q0,q1);
+            s1 = add_subPolynomialsGF(ts, multiplyPolynomialsGF(q, s0));
+            t1 = add_subPolynomialsGF(tt, multiplyPolynomialsGF(q, t0));
+        }
+        return r1;
     }
+
     //TODO
     public static int[] gaoDecode(int[] a, int[] b)
     {
@@ -400,27 +585,38 @@ class Task2 extends Task1
     }
 }
 
+
 public class Main {
     public static void main(String[] args) {
-        final int k=5;
-        final int n=7;
-        final int d = n-k+1;
-        final int t = (int) Math.floor(((double)d-1)/2);
+//        final int k=5;
+//        final int n=7;
+//        final int d = n-k+1;
+//        final int t = (int) Math.floor(((double)d-1)/2);
+//
+//        int[] polynome = new int[]{1,5,3,2,4};
+//        int[] message = new int[]{1,2,3,4,5,6,7};
+//        int[] code = Task1.gaoEncode(polynome,message);
+//        System.out.println(Arrays.toString(code));
 
-        int[] polynome = new int[]{1,5,3,2,4};
-        int[] message = new int[]{1,2,3,4,5,6,7};
-        int[] code = Task1.gaoEncode(polynome,message);
-        System.out.println(Arrays.toString(code));
+//        int[] a = {1, 2, 3}; // 3x^2 + 2x + 1
+//        int[] b = {5, 4}; // 4x + 5
+//        int[] sum = GaloisFieldGF8.add(a, b); // sum = 3x^2 + 6x + 6
+//        int[] difference = GaloisFieldGF8.subtract(a, b); // difference = 3x^2 + 6x + 2
+//        System.out.println(Arrays.toString(sum));
+//        System.out.println(Arrays.toString(difference));
+//        int[] product = GaloisFieldGF8.multiply_bin_(a, b); // product = 5x^3 + 18x^2 + 17x + 20
+//        System.out.println(Arrays.toString(product));
+//        int[] quotient = GaloisFieldGF8.divide_bin_(a, b); // quotient = 2x + 1
+//        System.out.println(Arrays.toString(quotient));
+//        //int[] remainder = GaloisFieldGF8.modulo(a, b); // remainder = 4x + 3
+//        //System.out.println(remainder);
+//        int[] power = GaloisFieldGF8.power_bin_(a, 3); // power = 1x^6 + 4x^5 + 2x^4 + 3x^3 + 2x^2 + 5x + 1
+//        System.out.println(power);
 
-//        System.out.println(Arrays.toString(Commons.intToBinary(6)));
-//        System.out.println(Arrays.toString(Commons.intToBinary(3)));
+        System.out.println(Task1.plus_minus(6,3));
+        System.out.println(Task1.multiply(6,3));
+        System.out.println(Task1.divide(3,6));
+        System.out.println(Task1.power(3,2));
 
-        //System.out.println(Task1.plus_minus(5,3));
-        //System.out.println(Task1.multiply(6,3));
-
-        int[] ten = Task1.multiplyPolynomialsGF(new int[]{0,1,1},new int[]{1,1});
-        System.out.println(Arrays.toString(ten));
-        ten = Task1.dividePolynomials(ten, Task1.intToBinary(5));
-        System.out.println(Arrays.toString(ten));
     }
 }
