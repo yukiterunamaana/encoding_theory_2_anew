@@ -133,7 +133,6 @@ class Task1
         }
         return Commons.trim(result);
     }
-
     static int[] divide_bin_(int[] a, int[] b) //V
     {
         int aDeg = a.length - 1;
@@ -147,7 +146,7 @@ class Task1
         temp=Commons.trim(temp);
         return divide_bin_(temp, b);
     }
-    static int[] temp_mult_bin(int[] a, int[] b) //V
+    static int[] temp_mult_bin(int[] a, int[] b)
     {
         int n = a.length - 1;
         int m = b.length - 1;
@@ -160,7 +159,7 @@ class Task1
         }
         return result;
     }
-    static int[] multiply_bin_(int[] a, int[] b) //V
+    static int[] multiply_bin_(int[] a, int[] b)
     {
         int n = a.length - 1;
         int m = b.length - 1;
@@ -168,28 +167,35 @@ class Task1
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= m; j++) {
                 result[i + j] += a[i] * b[j];
-                result[i + j] %= 2;
+                //result[i + j] %= 2;
             }
         }
+
+        for (int k=0; k<result.length; k++)
+            result[k] %= 2;
+
         if (binaryToInt(result)<Q)
             return result;
         else return divide_bin_(result,intToBinary(Q_primal));
     }
-    static int[] power_bin_(int[] a, int p) //V
+    static int[] power_bin_(int[] a, int p)
     {
         int[] result = {1};
         for (int i = 0; i < p; i++)
             result=multiply_bin_(result, a);
         return result; //divide_bin_(result,intToBinary(Q_primal));
     }
+
     public static int plus_minus(int a, int b) //V
     {return binaryToInt(plus_minus_bin_(intToBinary(a),intToBinary(b)));}
-    public static int divide(int a, int b) //V
+    public static int divide(int a, int b)
     {return binaryToInt(divide_bin_(intToBinary(a),intToBinary(b)));}
-    public static int multiply(int a, int b) //V
+    public static int multiply(int a, int b)
     {return binaryToInt(multiply_bin_(intToBinary(a),intToBinary(b)));}
-    public static int power(int a, int p) //V
+    public static int power(int a, int p)
     {return binaryToInt(power_bin_(intToBinary(a),p));}
+
+
     public static int[] add_subPolynomialsGF(int[] a, int[] b)
     {
         int[] result = new int[Math.max(a.length, b.length)];
@@ -206,36 +212,37 @@ class Task1
         for(int i=0; i<a.length; i++)
             for(int j=0; j<b.length; j++)
                 result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
-        return modulePolynomials_GF(Commons.trim(result),intToBinary(Q_primal));
+        result=Commons.trim(result);
+
+        if (binaryToInt(result)<Q)
+            return result;
+        else
+        return modulePolynomials_GF(result,intToBinary(Q_primal));
     }
-
-
-
-
-    public static int[][] dividePolynomials_internal(int[] a, int[] b) {
-        int m = a.length - 1;
-        int n = b.length - 1;
-        if (n == 0 || m < n)
-            return new int[][]{new int[]{0},a};
-            //throw new IllegalArgumentException("Invalid input polynomial(s)");
-        int[] q = new int[m - n + 1];
-        int[] r = a;
-        for (int i = m; i >= n; i--) {
-            int coeff = r[i] / b[n];
-            q[i - n] = coeff;
-            for (int j = n; j >= 0; j--)
-                r[i - n + j] -= coeff * b[j];
-        }
-        q = Commons.trim(q);
-        r = Commons.trim(r);
-
-        return new int[][] {q, r};
-        //return new int[][] { modulePolynomials(q,intToBinary(Q_primal)), Commons.trim(r)};
-    }
-    public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
-    {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
-    public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
-    {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
+//    public static int[][] dividePolynomials_internal(int[] a, int[] b) {
+//        int m = a.length - 1;
+//        int n = b.length - 1;
+//        if (n == 0 || m < n)
+//            return new int[][]{new int[]{0},a};
+//            //throw new IllegalArgumentException("Invalid input polynomial(s)");
+//        int[] q = new int[m - n + 1];
+//        int[] r = a;
+//        for (int i = m; i >= n; i--) {
+//            int coeff = r[i] / b[n];
+//            q[i - n] = coeff;
+//            for (int j = n; j >= 0; j--)
+//                r[i - n + j] -= coeff * b[j];
+//        }
+//        q = Commons.trim(q);
+//        r = Commons.trim(r);
+//
+//        return new int[][] {q, r};
+//        //return new int[][] { modulePolynomials(q,intToBinary(Q_primal)), Commons.trim(r)};
+//    }
+//    public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
+//    {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
+//    public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
+//    {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
 
     public static int[][] dividePolynomialsGF_internal(int[] a, int[] b)
     {
@@ -597,7 +604,7 @@ public class Main {
 //        int[] message = new int[]{1,2,3,4,5,6,7};
 //        int[] code = Task1.gaoEncode(polynome,message);
 //        System.out.println(Arrays.toString(code));
-
+//
 //        int[] a = {1, 2, 3}; // 3x^2 + 2x + 1
 //        int[] b = {5, 4}; // 4x + 5
 //        int[] sum = GaloisFieldGF8.add(a, b); // sum = 3x^2 + 6x + 6
@@ -613,10 +620,9 @@ public class Main {
 //        int[] power = GaloisFieldGF8.power_bin_(a, 3); // power = 1x^6 + 4x^5 + 2x^4 + 3x^3 + 2x^2 + 5x + 1
 //        System.out.println(power);
 
-        System.out.println(Task1.plus_minus(6,3));
+        //System.out.println(Task1.plus_minus(6,3));
         System.out.println(Task1.multiply(6,3));
-        System.out.println(Task1.divide(3,6));
-        System.out.println(Task1.power(3,2));
+        System.out.println(Task1.multiply(6,5));
 
     }
 }
