@@ -205,60 +205,7 @@ class Task1
     public static int[] modulePolynomials_GF(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomialsGF_internal(polyDividend, polyDivisor)[1];}
 
-    //TODO
-//    public static int[] lagrangePolynomialsGF(int[] x, int[] y)
-//    {
-//        assert (x.length==y.length);
-//
-//        int[] res = new int[]{0};
-//        for (int i = 0; i < x.length; i++)
-//            if (y[i] != 0)
-//            {
-//                int[] member = new int[]{1};
-//                int coeff = 1;
-//                for (int j = 0; j < x.length; j++)
-//                    if (i != j) {
-//                        int c = plus_minus(x[i], x[j]);
-//                        System.out.println(x[i] + " XOR " + x[j] + " = " + c);
-//                        coeff = multiply(coeff,c);
-//                    }
-//                System.out.println("coeff = " + coeff);
-//
-//
-//                for (int j = 0; j < x.length; j++)
-//                    if (i != j) {
-//                        int[] x_minus_xj = new int[]{Q-x[j],1};
-//                        //int[] x_minus_xj = new int[]{x[j],1};
-//                        System.out.println(Arrays.toString(member) + " *= " + Arrays.toString(x_minus_xj));
-//                        member = multiplyPolynomialsGF(member, x_minus_xj);
-//                        System.out.println(Arrays.toString(member));
-//                        //int coeff = plus_minus(x[i], x[j]);
-//                        //System.out.println(x[i] + " XOR " + x[j] + " = " + coeff);
-//                        //System.out.println(Arrays.toString(member) + " /= " + coeff);
-////                        for (int k = 0; k < member.length; k++)
-////                            //member[k] = divide(member[k], coeff);
-////                            member[k] = divpowbin(member[k], coeff);
-////                        System.out.println(Arrays.toString(member));
-//                    }
-//
-//                System.out.println(Arrays.toString(member) + " /= " + coeff);
-//                for (int k = 0; k < member.length; k++)
-//                    member[k] = divpowbin(member[k], coeff);
-//
-//                System.out.println(Arrays.toString(member) + " *= " + y[i]);
-//                for (int k = 0; k < member.length; k++)
-//                    member[k] = multiply(member[k], y[i]);
-//
-//                System.out.println("Subtotal: " + Arrays.toString(member));
-//
-//                System.out.println(Arrays.toString(res) + " XOR " + Arrays.toString(member));
-//                res = add_subPolynomialsGF(res, member);
-//                System.out.println("res subtotal: " + Arrays.toString(res));
-//            }
-//        return res;
-//    }
-
-    private static int[] member(int[] x, int[] y, int i)
+    private static int[] lagrangeMember(int[] x, int[] y, int i)
     {
         int[] member = new int[]{1};
         int coeff = 1;
@@ -294,7 +241,7 @@ class Task1
     {
         int[] res = new int[]{0};
         for (int i=0; i<x.length; i++)
-            res=Task1.add_subPolynomialsGF(res,member(x,y,i));
+            res=Task1.add_subPolynomialsGF(res, lagrangeMember(x,y,i));
         return res;
     }
 
