@@ -158,7 +158,7 @@ class Task1
 
         if (binaryToInt(result)<Q)
             return result;
-        else return divide_bin_(result,intToBinary(Q_primal));
+        else return divide_bin_(result,intToBinary(Q));
     }
     static int[] power_bin_(int[] a, int p) //V
     {
@@ -242,7 +242,8 @@ class Task1
     public static int[] modulePolynomials_GF(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomialsGF_internal(polyDividend, polyDivisor)[1];}
 
-    public static int[] lagrangePolynomialsGF(int[] x, int[] y) //CHECK
+    //TODO
+    public static int[] lagrangePolynomialsGF(int[] x, int[] y) //TODO
     {
         int[] res = new int[]{0};
         for (int i = 0; i < x.length; i++)
@@ -253,7 +254,10 @@ class Task1
                         int[] x_minus_xj = new int[]{1, Q-x[j]};
                         member = multiplyPolynomialsGF(member, x_minus_xj);
                         for (int k = 0; k < member.length; k++)
-                            member[k] = divide(member[k], plus_minus(x[i], x[j]));
+                        {
+                            int coeff = plus_minus(x[i], x[j]);
+                            member[k] = divide(member[k], coeff);
+                        }
                     }
                 for (int k = 0; k < member.length; k++)
                     member[k] = multiply(member[k], y[i]);
@@ -386,10 +390,10 @@ public class Main {
 //        for (int i=1; i<=4; i++)
 //            System.out.println(Task1.plus_minus(2,Task1.power(i,2)));
 
-//        System.out.println(Arrays.toString(Task1.lagrangePolynomialsGF(
-//                new int[]{1, 2, 3},
-//                new int[]{3, 6, 7}
-//        )));
-        System.out.println(Task1.evalPolynomialGF(2,new int[]{7,2}));
+        System.out.println(Arrays.toString(Task1.lagrangePolynomialsGF(
+                new int[]{1, 2, 3},
+                new int[]{3, 6, 7}
+        )));
+        //System.out.println(Task1.evalPolynomialGF(2,new int[]{7,2}));
     }
 }
