@@ -2,17 +2,17 @@ import java.util.*;
 
 class Commons
 {
-    static double[] trim(double[] arr) //V
-    {
-        int c = 0;
-        for (int i = arr.length-1; i>=0; i--)
-            if (arr[i]==0.0)
-                c++;
-            else
-                break;
-        double[] res = Arrays.copyOfRange(arr,0,arr.length - c);
-        return res;
-    }
+//    static double[] trim(double[] arr) //V
+//    {
+//        int c = 0;
+//        for (int i = arr.length-1; i>=0; i--)
+//            if (arr[i]==0.0)
+//                c++;
+//            else
+//                break;
+//        double[] res = Arrays.copyOfRange(arr,0,arr.length - c);
+//        return res;
+//    }
     static int[] trim(int[] arr) //V
     {
         int c = 0;
@@ -22,58 +22,60 @@ class Commons
             else
                 break;
         int[] res = Arrays.copyOfRange(arr,0,arr.length - c);
-        return res;
+        if (res.length>0)
+            return res;
+        else return new int[] {0};
     }
-    public static double[] addPolynomials(double[] a, double[] b) //V
-    {
-        double[] result = new double[Math.max(a.length, b.length)];
-        int m = Math.min(a.length,b.length);
-        for (int i=result.length-1; i>=0; i--)
-        {
-            result[i]+=(i<a.length)?a[i]:0;
-            result[i]+=(i<b.length)?b[i]:0;
-        }
-        return result;
-    }
-    public static double[] subPolynomials(double[] a, double[] b) //V
-    {
-        double[] result = new double[Math.max(a.length, b.length)];
-        int m = Math.min(a.length,b.length);
-        for (int i = 0; i < result.length; i++)
-        {
-            result[i] += (i < a.length) ? a[i] : 0;
-            result[i] -= (i < b.length) ? b[i] : 0;
-        }
-        return result;
-    }
-    public static double[] multiplyPolynomials(double[] a, double[] b) //V
-    {
-        int n = a.length - 1;
-        int m = b.length - 1;
-        double[] result = new double[n + m + 1];
-
-        for (int i = 0; i <= n; i++) {
-            for (int j = 0; j <= m; j++) {
-                result[i + j] += a[i] * b[j];
-            }
-        }
-        return result;
-    }
-    public static double[] dividePolynomials(double[] a, double[] b, double[] t) //V
-    {
-        int aDeg = a.length - 1;
-        int bDeg = b.length - 1;
-        if (aDeg < bDeg) return t;
-
-        double[] quotient = new double[aDeg - bDeg + 1];
-        quotient[quotient.length-1]=a[aDeg]/b[bDeg];
-        t=addPolynomials(t,quotient);
-        double[] sub = multiplyPolynomials(b,quotient);
-        double[] newA = subPolynomials(a,sub);
-        newA = trim(newA);
-        System.out.println(Arrays.toString(a) + " - " + Arrays.toString(sub) + " = " + Arrays.toString(newA));
-        return dividePolynomials(newA,b,t);
-    }
+//    public static double[] addPolynomials(double[] a, double[] b) //V
+//    {
+//        double[] result = new double[Math.max(a.length, b.length)];
+//        int m = Math.min(a.length,b.length);
+//        for (int i=result.length-1; i>=0; i--)
+//        {
+//            result[i]+=(i<a.length)?a[i]:0;
+//            result[i]+=(i<b.length)?b[i]:0;
+//        }
+//        return result;
+//    }
+//    public static double[] subPolynomials(double[] a, double[] b) //V
+//    {
+//        double[] result = new double[Math.max(a.length, b.length)];
+//        int m = Math.min(a.length,b.length);
+//        for (int i = 0; i < result.length; i++)
+//        {
+//            result[i] += (i < a.length) ? a[i] : 0;
+//            result[i] -= (i < b.length) ? b[i] : 0;
+//        }
+//        return result;
+//    }
+//    public static double[] multiplyPolynomials(double[] a, double[] b) //V
+//    {
+//        int n = a.length - 1;
+//        int m = b.length - 1;
+//        double[] result = new double[n + m + 1];
+//
+//        for (int i = 0; i <= n; i++) {
+//            for (int j = 0; j <= m; j++) {
+//                result[i + j] += a[i] * b[j];
+//            }
+//        }
+//        return result;
+//    }
+//    public static double[] dividePolynomials(double[] a, double[] b, double[] t) //V
+//    {
+//        int aDeg = a.length - 1;
+//        int bDeg = b.length - 1;
+//        if (aDeg < bDeg) return t;
+//
+//        double[] quotient = new double[aDeg - bDeg + 1];
+//        quotient[quotient.length-1]=a[aDeg]/b[bDeg];
+//        t=addPolynomials(t,quotient);
+//        double[] sub = multiplyPolynomials(b,quotient);
+//        double[] newA = subPolynomials(a,sub);
+//        newA = trim(newA);
+//        System.out.println(Arrays.toString(a) + " - " + Arrays.toString(sub) + " = " + Arrays.toString(newA));
+//        return dividePolynomials(newA,b,t);
+//    }
 
 }
 
@@ -104,23 +106,6 @@ class Task1
             res+=Math.pow(2,i)*n[i];
         return res;
     } //V
-
-//    static int add(int a, int b){return (a+b)%Q;}
-//
-//    static int sub(int a, int b){return (a-b+Q)%Q;}
-//
-////    static int pow(int a, int p)
-////    {
-////        int res=1;
-////        for (int i=0; i<p; i++)
-////
-////    }
-//    static int div(int a, int b)
-//    {
-//        return binaryToInt(divide_bin_(intToBinary(a),intToBinary(b)));
-//    }
-//
-//    static int mult(int a, int b){return div((a%Q)*(b%Q),Q_primal);}
 
     static int[] plus_minus_bin_(int[] a, int[] b) //V
     {
@@ -257,69 +242,7 @@ class Task1
     public static int[] modulePolynomials_GF(int[] polyDividend, int[] polyDivisor)
     {return dividePolynomialsGF_internal(polyDividend, polyDivisor)[1];}
 
-//    public static int[] multiplyPolynomialsGF(int[] a, int[] b)
-//    {
-//        int[] result = new int[a.length + b.length - 1];
-//        for(int i=0; i<a.length; i++)
-//            for(int j=0; j<b.length; j++)
-//                result[i+j] = plus_minus(result[i+j], multiply(a[i], b[j]));
-//        return Commons.trim(result);
-//    }
-//
-//    public static int[][] dividePolynomials_internal(int[] polyDividend, int[] polyDivisor) {
-//        int dividendDegree = polyDividend.length - 1;
-//        int divisorDegree = polyDivisor.length - 1;
-//
-//        // check for divisor being zero or having higher degree than dividend
-//        if (divisorDegree == 0 || dividendDegree < divisorDegree) {
-//            throw new IllegalArgumentException("Invalid input polynomial(s)");
-//        }
-//
-//        int[] quotient = new int[dividendDegree - divisorDegree + 1];
-//        int[] remainder = Arrays.copyOf(polyDividend, polyDividend.length);
-//
-//        for (int i = dividendDegree; i >= divisorDegree; i--) {
-//            int q = remainder[i] / polyDivisor[divisorDegree];
-//            quotient[i - divisorDegree] = q;
-//
-//            for (int j = divisorDegree; j >= 0; j--) {
-//                remainder[i - divisorDegree + j] -= q * polyDivisor[j];
-//            }
-//        }
-//
-//        // remove leading zeros if any in remainder
-//        int remainderDegree = remainder.length - 1;
-//        while (remainderDegree > 0 && remainder[remainderDegree] == 0) {
-//            remainderDegree--;
-//        }
-//        int[] finalRemainder = Arrays.copyOfRange(remainder, 0, remainderDegree + 1);
-//
-//        return new int[][] { quotient, finalRemainder };
-//    }
-//
-//    public static int[] dividePolynomials(int[] polyDividend, int[] polyDivisor)
-//    {return dividePolynomials_internal(polyDividend, polyDivisor)[0];}
-//    public static int[] modulePolynomials(int[] polyDividend, int[] polyDivisor)
-//    {return dividePolynomials_internal(polyDividend, polyDivisor)[1];}
-//
-//    public static int[] dividePolynomialsGF(int[] a, int[] b, int[] t)
-//    {
-//        int aDeg = a.length - 1;
-//        int bDeg = b.length - 1;
-//        if (aDeg < bDeg) return t;
-//
-//        int[] quotient = new int[aDeg - bDeg + 1];
-//        quotient[quotient.length-1]=divide(a[aDeg],b[bDeg]);
-//        t = add_subPolynomialsGF(t,quotient);
-//        System.out.println(Arrays.toString(t));
-//
-//        int[] sub = temp_mult_bin(b,quotient);
-//        int[] temp = add_subPolynomialsGF(a, sub);
-//        temp=Commons.trim(temp);
-//        return dividePolynomialsGF(temp, b, t);
-//    }
-
-    public static int[] lagrangePolynomialsGF(int[] x, int[] y)
+    public static int[] lagrangePolynomialsGF(int[] x, int[] y) //CHECK
     {
         int[] res = new int[]{0};
         for (int i = 0; i < x.length; i++)
@@ -327,7 +250,7 @@ class Task1
                 int[] member = new int[]{1};
                 for (int j = 0; j < x.length; j++)
                     if (i != j) {
-                        int[] x_minus_xj = new int[]{1, Q - x[j]};
+                        int[] x_minus_xj = new int[]{1, Q-x[j]};
                         member = multiplyPolynomialsGF(member, x_minus_xj);
                         for (int k = 0; k < member.length; k++)
                             member[k] = divide(member[k], plus_minus(x[i], x[j]));
@@ -339,7 +262,7 @@ class Task1
             }
         return res;
     }
-    public static int evalPolynomialGF(int x, int[] p)
+    public static int evalPolynomialGF(int x, int[] p) //V
     {
         int res=0;
         for (int i=0; i<p.length; i++)
@@ -457,7 +380,16 @@ public class Main {
         //System.out.println(Task1.multiply(6,5));
 
 
-        System.out.println(Arrays.toString(Task1.dividePolynomials_GF(new int[]{6, 4, 2}, new int[]{3, 2, 1})));
-        System.out.println(Arrays.toString(Task1.modulePolynomials_GF(new int[]{5, 4, 1}, new int[]{2, 3, 1})));
+        //System.out.println(Arrays.toString(Task1.dividePolynomials_GF(new int[]{6, 4, 2}, new int[]{3, 2, 1})));
+        //System.out.println(Arrays.toString(Task1.modulePolynomials_GF(new int[]{5, 4, 1}, new int[]{2, 3, 1})));
+
+//        for (int i=1; i<=4; i++)
+//            System.out.println(Task1.plus_minus(2,Task1.power(i,2)));
+
+//        System.out.println(Arrays.toString(Task1.lagrangePolynomialsGF(
+//                new int[]{1, 2, 3},
+//                new int[]{3, 6, 7}
+//        )));
+        System.out.println(Task1.evalPolynomialGF(2,new int[]{7,2}));
     }
 }
