@@ -214,27 +214,27 @@ class Task1
         for (int j = 0; j < x.length; j++)
             if (i != j) {
                 int c = Task1.plus_minus(x[i], x[j]);
-                System.out.println(x[i] + " XOR " + x[j] + " = " + c);
+                //System.out.println(x[i] + " XOR " + x[j] + " = " + c);
                 coeff = Task1.multiply(coeff,c);
             }
-        System.out.println("coeff = " + coeff);
+        //System.out.println("coeff = " + coeff);
         for (int j = 0; j < x.length; j++)
             if (i != j) {
                 int[] x_minus_xj = new int[]{Task1.Q-x[j],1};
-                System.out.println(Arrays.toString(member) + " *= " + Arrays.toString(x_minus_xj));
+                //System.out.println(Arrays.toString(member) + " *= " + Arrays.toString(x_minus_xj));
                 member = Task1.multiplyPolynomialsGF(member, x_minus_xj);
-                System.out.println(Arrays.toString(member));
+                //System.out.println(Arrays.toString(member));
             }
 
-        System.out.println(Arrays.toString(member) + " /= " + coeff);
+        //System.out.println(Arrays.toString(member) + " /= " + coeff);
         for (int k = 0; k < member.length; k++)
             member[k] = Task1.divide(member[k], coeff);
 
-        System.out.println(Arrays.toString(member) + " *= " + y[i]);
+        //System.out.println(Arrays.toString(member) + " *= " + y[i]);
         for (int k = 0; k < member.length; k++)
             member[k] = Task1.multiply(member[k], y[i]);
 
-        System.out.println("Total: " + Arrays.toString(member));
+        //System.out.println("Total: " + Arrays.toString(member));
 
         return member;
     }
@@ -307,34 +307,21 @@ class Task1
         return a;
     }
     //TODO
-    static int[] partial_gcd_GF(int[] q0, int[] q1, int stop)
+    static int[][] partial_gcd_GF(int[] g0, int[] g1, double stop)
     {
-        int[] r0 = q0;
-        int[] r1=q1;
-
-        int[] s0=Task1.intToBinary(1);
-        int[] s1=Task1.intToBinary(0);
-
-        int[] t0=Task1.intToBinary(0);
-        int[] t1=Task1.intToBinary(1);
-
-        while (r1.length-1>stop)
-        {
-            int[] q = Task1.dividePolynomials_GF(q0,q1);
-
-            q0=Commons.trim(q0);
-            q1=Commons.trim(q1);
-
-            int[] ts=s0;
-            int[] tt=t0;
-            r0=r1;
-            s0=s1;
-            t0=t1;
-            r1=Task1.modulePolynomials_GF(q0,q1);
-            s1 = add_subPolynomialsGF(ts, multiplyPolynomialsGF(q, s0));
-            t1 = add_subPolynomialsGF(tt, multiplyPolynomialsGF(q, t0));
+        int[] u = new int[]{1, 0};
+        int[] v = new int[]{0, 1};
+        while (g0.length>=stop && g1.length!=0 && g1[g1.length-1]!=0) {
+            int[][] quotRem = dividePolynomialsGF_internal(g0, g1);
+            int[] q = quotRem[0];
+            int []r = quotRem[1];
+            int[] tempU = add_subPolynomialsGF(u, multiplyPolynomialsGF(q, v));
+            u = v;
+            v = tempU;
+            g0 = g1;
+            g1 = r;
         }
-        return r1;
+        return new int[][]{g0,v};
     }
 
     //TODO
@@ -348,13 +335,15 @@ class Task1
         System.out.println("g0: "+Arrays.toString(g0));
         int[] g1 = Commons.trim(lagrangePolynomialsGF(a, b));
         System.out.println("g1: "+Arrays.toString(g1));
-        int[] g = Commons.trim(partial_gcd_GF_simpl(g0,g1,(n+k)/2));
+        int[][] gv = partial_gcd_GF(g0,g1,(n+k)/2);
+        int[] g = Commons.trim(gv[0]);
+        int[] v = Commons.trim(gv[1]);
         System.out.println("g: "+Arrays.toString(g));
+        System.out.println("v: "+Arrays.toString(v));
 
-        int[] v = dividePolynomials_GF(g,g1);
-
-        int[] r = modulePolynomials_GF(g,v);
-        int[] f = dividePolynomials_GF(g,v);
+        int[][] fr = dividePolynomialsGF_internal(g,v);
+        int[] f = fr[0];
+        int[] r = fr[1];
         System.out.println("r: "+Arrays.toString(r));
         System.out.println("f: "+Arrays.toString(f));
 
@@ -366,28 +355,74 @@ class Task1
 
 class Task2 extends Task1
 {
-    final static int BASE = 64;
-    final static int l = 3;
-    static int[] m = new int[l];
+    final static int BASE = 1024;
+    static int[] fingerprint = new int[]{};
+    static int[] m = new int[]{};
     static Map<Integer, Integer> s = new HashMap<Integer, Integer>();
 
-    static void encode(String fingerprint)
+    static void vault_encode(int[] fingerprint, int[] polynome)
     {
+        m = polynome;
         Random r = new Random();
         for (int i=0; i<BASE; i++)
-            if (fingerprint.indexOf(i)!=-1)
+            if (Arrays.asList(fingerprint).contains(i))
                 s.put(i, evalPolynomialGF(i,m));
             else s.put(i, r.nextInt() % BASE);
     }
+//
+//    static int vault_decode(int[] fingerprint)
+//    {
+//        int[] key = Task1.lagrangePolynomialsGF()
+//    }
+
 }
 
+class Task3 extends Task1
+{
+
+    public static String reedMullerEncode(String binaryString) {
+        // Define parameters
+        final int m = 4;
+        final int n = (int)Math.pow(2, m);
+        final int r = 2;
+        final int k = (int)Math.pow(2, r);
+
+        // Convert binary string to boolean array
+        boolean[] input = new boolean[binaryString.length()];
+        for (int i = 0; i < binaryString.length(); i++) {
+            input[i] = binaryString.charAt(i) == '1';
+        }
+
+        // Perform Reed-Muller encoding
+        boolean[] output = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            output[i] = false;
+            for (int j = 0; j < k; j++) {
+                int idx = i & j;
+                boolean term = true;
+                for (int l = 0; l < r; l++) {
+                    term &= ((idx >> l) & 1) == 1;
+                }
+                output[i] ^= (term ? input[j] : false);
+            }
+        }
+
+        // Convert boolean array to binary string
+        StringBuilder sb = new StringBuilder();
+        for (boolean bit : output) {
+            sb.append(bit ? '1' : '0');
+        }
+        return sb.toString();
+    }
+
+}
 
 public class Main {
     public static void main(String[] args) {
 
         int[] code = new int[] {1,3,4,2,5};
 
-        int[] message = new int[] {0,1,2,3,4,5,6};
+        int[] message = new int[] {0,1,2,3,4};
 
         //System.out.println(Task1.lagrangePolynomialsGF(code,message));
 
@@ -396,5 +431,8 @@ public class Main {
         System.out.println(Arrays.toString(encrypted));
 
         System.out.println(Arrays.toString(Task1.gaoDecode(code,encrypted)));
+
+
+        System.out.println(Task3.reedMullerEncode("00001111001"));
     }
 }
